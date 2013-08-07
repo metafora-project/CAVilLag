@@ -1,0 +1,266 @@
+package de.kuei.metafora.client;
+
+import java.sql.Date;
+import java.util.Vector;
+
+import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
+
+import de.kuei.metafora.client.rpc.ChallengeModel;
+
+public class ChallengesPanel extends LayoutPanel {
+	
+  private ChallengeModel selectedChallenge = null;
+  private Vector<ChallengeModel> challenges;
+	private CellTable<ChallengeModel> challengeTable = null;
+	private TextBox tbChallengeName, tbChallengeUrl;
+
+	public ChallengesPanel(Vector<ChallengeModel> challenges) {
+		this.challenges = challenges;
+		createChallengeTable();
+		challengeCreatorPanel();
+	}
+		
+	private void challengeCreatorPanel() {
+		LayoutPanel createChallengePanel = new LayoutPanel();
+
+		Label cnLabel = new Label("Challenge Name:");
+		createChallengePanel.add(cnLabel);
+		createChallengePanel.setWidgetTopHeight(cnLabel, 10, Unit.PX, 30, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(cnLabel, 30, Unit.PX, 150, Unit.PX);
+    tbChallengeName = new TextBox();
+//    tbChallengeName.addKeyPressHandler(new KeyPressHandler() {
+//      public void onKeyPress(KeyPressEvent event) {
+//        if (!Character.isLetterOrDigit(event.getCharCode())) {
+//          ((TextBox) event.getSource()).cancelKey();
+//        }
+//      }
+//    });
+    createChallengePanel.add(tbChallengeName);
+		createChallengePanel.setWidgetTopHeight(tbChallengeName, 50, Unit.PX, 30, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(tbChallengeName, 30, Unit.PX, 400, Unit.PX);
+
+		Label cnUrl = new Label("Challenge URL:");
+		createChallengePanel.add(cnUrl);
+		createChallengePanel.setWidgetTopHeight(cnUrl, 90, Unit.PX, 30, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(cnUrl, 30, Unit.PX, 150, Unit.PX);
+    tbChallengeUrl = new TextBox();
+//    tbChallengeUrl.addKeyPressHandler(new KeyPressHandler() {
+//      public void onKeyPress(KeyPressEvent event) {
+//        if (" \"".indexOf(event.getCharCode())>0) {
+//          ((TextBox) event.getSource()).cancelKey();
+//        }
+//      }
+//    });
+    createChallengePanel.add(tbChallengeUrl);
+		createChallengePanel.setWidgetTopHeight(tbChallengeUrl, 130, Unit.PX, 30, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(tbChallengeUrl, 30, Unit.PX, 400, Unit.PX);
+		
+		Button createNewChallengeButton = new Button("update challenge table", new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				createNewChallenge(tbChallengeName.getText(), tbChallengeUrl.getText());
+			}
+		});
+		createNewChallengeButton.setSize("150", "30px");
+		createChallengePanel.add(createNewChallengeButton);
+		createChallengePanel.setWidgetTopHeight(createNewChallengeButton, 200, Unit.PX, 30, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(createNewChallengeButton, 150, Unit.PX, 160, Unit.PX);
+
+		this.add(createChallengePanel);
+		this.setWidgetTopHeight(createChallengePanel, 10, Unit.PCT, 80, Unit.PCT);
+		this.setWidgetRightWidth(createChallengePanel, 5, Unit.PCT, 35, Unit.PCT);
+	}
+	
+	private int challengeExists(String challengeName) {
+		for (ChallengeModel model : challenges) {
+			if (model.getChallengeName().equals(challengeName)) {
+				return model.getChallengeId();
+			}
+		}
+		return -1;
+	}
+
+	protected void createNewChallenge(String name, String url) {
+		int challengeID = challengeExists(name);
+		if (challengeID >= 0) {
+			CAVilLag.instance.updateChallengeUrl(challengeID, url);
+		} else {
+			CAVilLag.instance.createNewChallenge(name, url);
+		}
+		CAVilLag.instance.updateChallengeTab();
+//		createChallengeTable();
+	}
+
+	private void createChallengeTable() {
+    challengeTable  = new CellTable<ChallengeModel>();
+    challengeTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.DISABLED);
+    
+    // Add a selection model to handle user selection.
+    final SingleSelectionModel<ChallengeModel> selectionModel = new SingleSelectionModel<ChallengeModel>();
+    challengeTable.setSelectionModel(selectionModel);
+    selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+      public void onSelectionChange(SelectionChangeEvent event) {
+      	selectedChallenge = selectionModel.getSelectedObject();
+        if (selectedChallenge != null) {
+        	tbChallengeName.setText(selectedChallenge.getChallengeName());
+        	tbChallengeUrl.setText(selectedChallenge.getChallengeUrl());
+//          CAVilLag.instance.readTemplate(selectedChallenge.getTemplate());
+        }
+      }
+    });
+    
+
+//    // Add a text column to show the challenge name.
+//    Column<ChallengeInfo,Boolean> checkboxColumn = new Column<ChallengeInfo,Boolean>(new CheckboxCell() {}) {
+//    	@Override
+//      public Boolean getValue(ChallengeInfo object) {
+//        return false;
+//      }
+//
+//    };
+//    challengeTable.addColumn(checkboxColumn, "selected");
+    
+    // Add a text column to show the challenge name.
+    TextColumn<ChallengeModel> nameColumn = new TextColumn<ChallengeModel>() {
+      @Override
+      public String getValue(ChallengeModel object) {
+        return object.getChallengeName();
+      }
+
+			@Override
+			public void render(Context context, ChallengeModel object, SafeHtmlBuilder sb) {
+				if (object == null) {
+					return;
+				}
+				sb.appendHtmlConstant("<a target=\"_blank\" href=https://metafora.ku-eichstaett.de/planningtoolsolo/PlanningTool.html?locale=en" +
+						"&token=CAVILLAGTEST&user=tom&pw=82a772ff0241d89b26f541c6050c7707&pwEncrypted=true&ptMap=Tm9iYmlzTWFw&groupId=Awesome" +
+						"&challengeId=" + object.getChallengeId() +
+						"&challengeName=" + object.getChallengeName().replace(" ", "%20") +
+						"&testServer=true&cavillag=true>");
+				sb.appendEscaped(object.getChallengeName());
+				sb.appendHtmlConstant("</a>");
+//				super.render(context, object, sb);
+			}
+      
+      
+    };
+    challengeTable.addColumn(nameColumn, "Challenge Name");
+    
+    // and the challenge URL
+    
+    TextColumn<ChallengeModel> urlColumn = new TextColumn<ChallengeModel>() {
+      @Override
+      public String getValue(ChallengeModel object) {
+        return object.getChallengeUrl();
+      }
+
+			@Override
+			public void render(Context context, ChallengeModel object, SafeHtmlBuilder sb) {
+				if (object == null) {
+					return;
+				}
+				sb.appendHtmlConstant("<a href="+object.getChallengeUrl()+">");
+				sb.appendEscaped("open");
+				sb.appendHtmlConstant("</a>");
+			}
+    };
+    challengeTable.addColumn(urlColumn, "Challenge URL");
+    
+    
+    TextColumn<ChallengeModel> vlColumn = new TextColumn<ChallengeModel>() {
+			String timestamp;
+
+			@Override
+			public String getValue(ChallengeModel object) {
+				if ((object.getTemplate() == null) || object.getTemplate().isEmpty()) {
+					return "EMPTY";
+				}
+//			  try {
+//			    // parse the XML document into a DOM
+//			    Document messageDom = XMLParser.parse(object.getTemplate());
+//			    
+//			    // find the sender's display name in an attribute of the <from> tag
+//			    Node templateNode = messageDom.getElementsByTagName("template").item(0);
+//			    if (templateNode != null) {
+////				    Window.alert("Reading timestamp from "+templateNode.getNodeName());
+//				    timestamp = ((Element)templateNode).getAttribute("time"); 
+//			    }
+//			  } catch (DOMException e) {
+////			    Window.alert("Could not parse XML document.");
+//			  }				
+				timestamp = CAVilLag.instance.getTimestamp(object.getTemplate());
+			  if ((timestamp == null) || timestamp.isEmpty()) {
+			  	return "created: unknown";
+			  }
+			  Date createdDate = new Date(Long.parseLong(timestamp));
+				return "created: "+ DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(createdDate);
+			}
+    	
+		};
+    challengeTable.addColumn(vlColumn, "Visual Language");
+    
+
+    TextColumn<ChallengeModel> lastUsedColumn = new TextColumn<ChallengeModel>() {
+
+			@Override
+			public String getValue(ChallengeModel object) {
+				if ((object.getLastUsed() == null) || object.getLastUsed().isEmpty()) {
+					return "EMPTY";
+				}
+			  Date lastUsedDate = new Date(Long.parseLong(object.getLastUsed()));
+				return DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss").format(lastUsedDate);
+			}
+
+    };
+    challengeTable.addColumn(lastUsedColumn, "last used");
+    
+    // Set the total row count. This isn't strictly necessary, but it affects
+    // paging calculations, so its good habit to keep the row count up to date.
+//    challengeTable.setRowCount(challenges.size()+1, true);
+
+    // Push the data into the widget.
+    challengeTable.setRowData(challenges);
+//    challengeTable.setVisibleRange(0, challenges.size()+1);
+    challengeTable.setSize("100%", "100%");
+		ScrollPanel sp = new ScrollPanel();
+		sp.setSize("100%", "100%");
+		sp.add(challengeTable);
+    this.add(sp);
+		this.setWidgetTopHeight(sp, 5, Unit.PCT, 90, Unit.PCT);
+		this.setWidgetLeftWidth(sp, 5, Unit.PCT, 55, Unit.PCT);
+//    this.add(challengeTable);
+//		this.setWidgetTopHeight(challengeTable, 5, Unit.PCT, 90, Unit.PCT);
+//		this.setWidgetLeftWidth(challengeTable, 5, Unit.PCT, 55, Unit.PCT);
+	}
+
+	public ChallengeModel getSelectedChallenge() {
+		return selectedChallenge;
+	}
+	
+	public void resetChallengeCreatorPanel() {
+		tbChallengeName.setText("");
+		tbChallengeUrl.setText("");
+	}
+
+	public void updateChallenges(Vector<ChallengeModel> result) {
+		this.challenges = result;
+    challengeTable.setRowData(challenges);
+//		challengeTable.setRowData(challenges.size(), challenges);
+//    challengeTable.setVisibleRange(0, challenges.size());
+	}
+	
+}

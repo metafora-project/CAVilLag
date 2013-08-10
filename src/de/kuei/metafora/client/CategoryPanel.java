@@ -1,5 +1,6 @@
 package de.kuei.metafora.client;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -182,6 +183,45 @@ public class CategoryPanel extends SimplePanel {
 			}
 		}
 		return resultCards;
+	}
+	
+	public void sortCards(ArrayList<String> selectedCards) {
+		Iterator<Widget> wi = selectedCardsPanel.iterator();
+		Widget w;
+		DnDNode node;
+		while (wi.hasNext()) {
+			w = wi.next();
+			if (w instanceof DnDNode) {
+				node = (DnDNode)w;
+				selectedCardsPanel.remove(node);
+				availableCardsPanel.add(node);
+			}
+		}
+		wi = availableCardsPanel.iterator();
+		while (wi.hasNext()) {
+			w = wi.next();
+			if (w instanceof DnDNode) {
+				node = (DnDNode)w;
+				if (selectedCards.contains(node.getId())) {
+					availableCardsPanel.remove(node);
+					selectedCardsPanel.add(node);
+				}
+			}
+		}
+	}
+
+	public void unselectAllCards() {
+		Iterator<Widget> wi = selectedCardsPanel.iterator();
+		Widget w;
+		DnDNode node;
+		while (wi.hasNext()) {
+			w = wi.next();
+			if (w instanceof DnDNode) {
+				node = (DnDNode)w;
+				selectedCardsPanel.remove(node);
+				availableCardsPanel.add(node);
+			}
+		}
 	}
 
 }

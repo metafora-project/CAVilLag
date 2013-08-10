@@ -6,15 +6,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 import java.util.Vector;
 
-public class MysqlInitConnector {
+public class MysqlInitConnector extends MyslqAccessData {
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("de.kuei.metafora.cavillag");
 	private static String url = "jdbc:mysql://localhost/metaforainit?useUnicode=true&characterEncoding=UTF-8";
-	private static String user = RESOURCE_BUNDLE.getString("username"); // put in your mysql database username here
-	private static String password = RESOURCE_BUNDLE.getString("password"); // put in your mysql database password here
+	
+	/**
+	 * To connect to your MySql Database you have two option. You can either define the following variables 
+	 * in the abstract class MyslqAccessData or you can do it here and remove "extends MysqlAccessData" above.
+	 * public static String user = "mysqlUser";
+	 * public static String password = "mysqlpassword";
+	 */
 
 	private static MysqlInitConnector instance = null;
 

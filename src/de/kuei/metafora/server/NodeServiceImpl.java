@@ -13,7 +13,7 @@ import de.kuei.metafora.server.mysql.MysqlConnector;
  * @author lingnau
  *
  */
-public class NodeServiceImpl extends RemoteServiceServlet implements NodeService{
+public class NodeServiceImpl extends RemoteServiceServlet implements NodeService {
 
 	@Override
 	public Vector<String[]> getNodes(String language) {
@@ -38,6 +38,11 @@ public class NodeServiceImpl extends RemoteServiceServlet implements NodeService
 	@Override
 	public boolean updateChallengeUrl(int challengeId, String url) {
 		return MysqlConnector.getInstance().updateChallengeUrl(challengeId, url);
+	}
+
+	@Override
+	public boolean updateChallengeName(int challengeID, String name) {
+		return MysqlConnector.getInstance().updateChallengeName(challengeID, name);
 	}
 
 }

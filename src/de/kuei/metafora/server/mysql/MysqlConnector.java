@@ -8,21 +8,22 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
 import de.kuei.metafora.client.rpc.ChallengeModel;
 
-public class MysqlConnector {
+public class MysqlConnector extends MyslqAccessData {
 	
-	// the resource file is not part of this distribution, so you either need to create your own or directly type in your information
-	// where RESOURCE_BUNDLE.getString is used
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("de.kuei.metafora.cavillag");
-
-	public static String url;// =
-														// "jdbc:mysql://localhost/metafora?useUnicode=true&characterEncoding=UTF-8";
-	public static String user = RESOURCE_BUNDLE.getString("username"); // put in your mysql database username here
-	public static String password = RESOURCE_BUNDLE.getString("password"); // put in your mysql database password here
+	public static String url;
+	
+	/**
+	 * To connect to your MySql Database you have two option. You can either define the following variables 
+	 * in the abstract class MyslqAccessData or you can do it here and remove "extends MysqlAccessData" above.
+	 * public static String user = "mysqlUser";
+	 * public static String password = "mysqlpassword";
+	 */
 
 	private static MysqlConnector instance = null;
 
@@ -39,7 +40,8 @@ public class MysqlConnector {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.err.println("class loaded");		} catch (ClassNotFoundException e) {
+			System.err.println("class loaded");		
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -233,6 +235,25 @@ public class MysqlConnector {
 			return false;
 		} catch (URISyntaxException e) {
 			return false;
+		}
+		return true;
+	}
+
+	public boolean updateChallengeName(int challengeID, String challengeName) {
+		if (challengeID == -1)
+			return false;
+
+		String sql = "UPDATE challenge SET challengeName='" + challengeName + "'  WHERE challengeId=" + challengeID;
+
+		Statement stmt;
+		try {
+			stmt = getConnection().createStatement();
+
+			stmt.executeUpdate(sql);
+
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return true;
 	}

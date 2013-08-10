@@ -12,6 +12,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
@@ -28,6 +29,7 @@ public class ChallengesPanel extends LayoutPanel {
   private Vector<ChallengeModel> challenges;
 	private CellTable<ChallengeModel> challengeTable = null;
 	private TextBox tbChallengeName, tbChallengeUrl;
+	private int selectedChallengeID;
 
 	public ChallengesPanel(Vector<ChallengeModel> challenges) {
 		this.challenges = challenges;
@@ -70,7 +72,7 @@ public class ChallengesPanel extends LayoutPanel {
 		createChallengePanel.setWidgetTopHeight(tbChallengeUrl, 130, Unit.PX, 30, Unit.PX);
 		createChallengePanel.setWidgetLeftWidth(tbChallengeUrl, 30, Unit.PX, 400, Unit.PX);
 		
-		Button createNewChallengeButton = new Button("update challenge table", new ClickHandler() {
+		Button createNewChallengeButton = new Button("create new challenge", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				createNewChallenge(tbChallengeName.getText(), tbChallengeUrl.getText());
 			}
@@ -78,7 +80,17 @@ public class ChallengesPanel extends LayoutPanel {
 		createNewChallengeButton.setSize("150", "30px");
 		createChallengePanel.add(createNewChallengeButton);
 		createChallengePanel.setWidgetTopHeight(createNewChallengeButton, 200, Unit.PX, 30, Unit.PX);
-		createChallengePanel.setWidgetLeftWidth(createNewChallengeButton, 150, Unit.PX, 160, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(createNewChallengeButton,  60, Unit.PX, 140, Unit.PX);
+
+		Button updateChallengeButton = new Button("update challenge table", new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				updateChallenge(tbChallengeName.getText(), tbChallengeUrl.getText());
+			}
+		});
+		updateChallengeButton.setSize("150", "30px");
+		createChallengePanel.add(updateChallengeButton);
+		createChallengePanel.setWidgetTopHeight(updateChallengeButton, 200, Unit.PX, 30, Unit.PX);
+		createChallengePanel.setWidgetRightWidth(updateChallengeButton, 80, Unit.PX, 140, Unit.PX);
 
 		this.add(createChallengePanel);
 		this.setWidgetTopHeight(createChallengePanel, 10, Unit.PCT, 80, Unit.PCT);
@@ -97,9 +109,21 @@ public class ChallengesPanel extends LayoutPanel {
 	protected void createNewChallenge(String name, String url) {
 		int challengeID = challengeExists(name);
 		if (challengeID >= 0) {
-			CAVilLag.instance.updateChallengeUrl(challengeID, url);
+			Window.alert("The new challenge name already exists!");
 		} else {
 			CAVilLag.instance.createNewChallenge(name, url);
+		}
+		CAVilLag.instance.updateChallengeTab();
+//		createChallengeTable();
+	}
+
+	protected void updateChallenge(String name, String url) {
+		int challengeID = challengeExists(name);
+		if ((challengeID >= 0) && (selectedChallengeID != challengeID)) {
+			Window.alert("You cannot rename a challenge into an existing name!");
+		} else if (selectedChallengeID >= 0) {
+			CAVilLag.instance.updateChallengeName(selectedChallengeID, name);
+			CAVilLag.instance.updateChallengeUrl(selectedChallengeID, url);
 		}
 		CAVilLag.instance.updateChallengeTab();
 //		createChallengeTable();
@@ -118,7 +142,8 @@ public class ChallengesPanel extends LayoutPanel {
         if (selectedChallenge != null) {
         	tbChallengeName.setText(selectedChallenge.getChallengeName());
         	tbChallengeUrl.setText(selectedChallenge.getChallengeUrl());
-//          CAVilLag.instance.readTemplate(selectedChallenge.getTemplate());
+        	selectedChallengeID = selectedChallenge.getChallengeId();
+          CAVilLag.instance.readTemplate(selectedChallenge.getTemplate());
         }
       }
     });
@@ -173,9 +198,12 @@ public class ChallengesPanel extends LayoutPanel {
 				if (object == null) {
 					return;
 				}
-				sb.appendHtmlConstant("<a href="+object.getChallengeUrl()+">");
-				sb.appendEscaped("open");
-				sb.appendHtmlConstant("</a>");
+				String url = object.getChallengeUrl();
+				if ((url != null) && (url.length() > 7)) {
+					sb.appendHtmlConstant("<a href="+url+">");
+					sb.appendEscaped("open");
+					sb.appendHtmlConstant("</a>");
+				}
 			}
     };
     challengeTable.addColumn(urlColumn, "Challenge URL");
@@ -228,13 +256,8 @@ public class ChallengesPanel extends LayoutPanel {
     };
     challengeTable.addColumn(lastUsedColumn, "last used");
     
-    // Set the total row count. This isn't strictly necessary, but it affects
-    // paging calculations, so its good habit to keep the row count up to date.
-//    challengeTable.setRowCount(challenges.size()+1, true);
-
     // Push the data into the widget.
     challengeTable.setRowData(challenges);
-//    challengeTable.setVisibleRange(0, challenges.size()+1);
     challengeTable.setSize("100%", "100%");
 		ScrollPanel sp = new ScrollPanel();
 		sp.setSize("100%", "100%");
@@ -242,9 +265,6 @@ public class ChallengesPanel extends LayoutPanel {
     this.add(sp);
 		this.setWidgetTopHeight(sp, 5, Unit.PCT, 90, Unit.PCT);
 		this.setWidgetLeftWidth(sp, 5, Unit.PCT, 55, Unit.PCT);
-//    this.add(challengeTable);
-//		this.setWidgetTopHeight(challengeTable, 5, Unit.PCT, 90, Unit.PCT);
-//		this.setWidgetLeftWidth(challengeTable, 5, Unit.PCT, 55, Unit.PCT);
 	}
 
 	public ChallengeModel getSelectedChallenge() {

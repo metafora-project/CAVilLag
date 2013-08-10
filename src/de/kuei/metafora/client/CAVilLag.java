@@ -1,6 +1,7 @@
 package de.kuei.metafora.client;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
@@ -26,6 +27,7 @@ import com.google.gwt.user.client.ui.TabLayoutPanel;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 import de.kuei.metafora.client.rpc.ChallengeModel;
@@ -368,7 +370,7 @@ public class CAVilLag implements EntryPoint {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (result.booleanValue()) {
-					Window.alert("sucessfully updated challenge URL");
+//					Window.alert("sucessfully updated challenge URL");
 					challengePanel.resetChallengeCreatorPanel();
 				} else {
 					Window.alert("Please check URL!");
@@ -376,4 +378,53 @@ public class CAVilLag implements EntryPoint {
 			}});
 	}
 
+	public void updateChallengeName(int challengeID, String name) {
+		nodeService.updateChallengeName(challengeID, name, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("update challenge URL failed");
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (result.booleanValue()) {
+//					Window.alert("sucessfully updated challenge Name!");
+					challengePanel.resetChallengeCreatorPanel();
+				} else {
+					Window.alert("Please check Name!");
+				}
+			}});
+	}
+
+	public void readTemplate(String template) {
+		if (template==null || !template.startsWith("<?xml")) {
+			for (String categoryName : categoryMap.keySet()) {
+				CategoryPanel cp = categoryMap.get(categoryName);
+				cp.unselectAllCards();
+			}
+		}
+		Document xmlDoc = XMLParser.parse(template);
+		Element root = xmlDoc.getDocumentElement();
+		XMLParser.removeWhitespace(xmlDoc);
+		Window.alert("trying to sort " + root.getNodeName());
+		NodeList results = root.getChildNodes();
+		HashMap<String, ArrayList<String>> selectedCardsMap = new HashMap<String, ArrayList<String>>();
+		for (int counter=0; counter<results.getLength(); ++counter) {
+			Element categoryElement = (Element) results.item(counter);
+			String categoryID = categoryElement.getAttribute("id");
+			NodeList cards = categoryElement.getElementsByTagName("card");
+			ArrayList<String> selectedCards = new ArrayList<String>();
+			for (int i=0; i<cards.getLength(); ++i) {
+				Element card = (Element)cards.item(i);
+				selectedCards.add(card.getAttribute("id"));
+			}
+			selectedCardsMap.put(categoryID, selectedCards);
+		}
+		for (String categoryName : categoryMap.keySet()) {
+			CategoryPanel cp = categoryMap.get(categoryName);
+			cp.sortCards(selectedCardsMap.get(getCategoryID(categoryName)));
+		}
+		Window.alert("xml sucessfully parsed");
+	}
+	
 }

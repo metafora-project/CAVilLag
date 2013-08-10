@@ -17,6 +17,8 @@ public interface NodeService extends RemoteService{
 
 	boolean addNewChallenge(String name, String url);
 
-	boolean updateChallengeUrl(int challengeId, String url); 
+	boolean updateChallengeUrl(int challengeId, String url);
+
+	boolean updateChallengeName(int challengeID, String name); 
 
 }

@@ -1,10 +1,13 @@
 package de.kuei.metafora.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -14,6 +17,8 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 public class ResultPanel extends LayoutPanel {
@@ -140,6 +145,16 @@ public class ResultPanel extends LayoutPanel {
 		}
     return doc;
 		
+	}
+
+	public void setXML(String template) {
+//		Document doc = XMLParser.parse(template);
+//		NodeList nl = doc.getElementsByTagName("category");
+//		Node categoryNode;
+//		String categoryName;
+//		for (int i=0; i<nl.getLength(); ++i) {
+//			categoryNode = nl.item(i);
+//		}
 	}
 	
 //	protected String getXMLString() {

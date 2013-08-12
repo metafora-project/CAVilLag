@@ -45,7 +45,6 @@ public class CAVilLag implements EntryPoint {
 	private final NodeServiceAsync nodeService = GWT.create(NodeService.class);
 
 	private PickupDragController controller;
-	// private VerticalPanel cardPanel, edgePanel;
 	private TabLayoutPanel main;
 	
 	private ChallengesPanel challengePanel;
@@ -69,22 +68,10 @@ public class CAVilLag implements EntryPoint {
 		categoryNameIdMap = new HashMap<String, String>();
 
 		controller = new PickupDragController(RootPanel.get(), false);
-//		DemoDragHandler ddh = new DemoDragHandler( new HTML("test"));
 
 		main = new TabLayoutPanel(3.0, Unit.EM);
 		main.setSize("100%", "100%");
 		main.setAnimationDuration(1000);
-//		SelectionHandler<Integer> handler = new SelectionHandler<Integer>() {
-//
-//			@Override
-//			public void onSelection(SelectionEvent<Integer> event) {
-//				if (event.getSelectedItem().equals(main.getWidgetIndex(rPanel))) {
-//					rPanel.refreshView();
-//				}
-//				
-//			}
-//			
-//		};
 		main.addSelectionHandler(new SelectionHandler<Integer>() {
 
 			@Override
@@ -99,9 +86,6 @@ public class CAVilLag implements EntryPoint {
 		
 		addChallengeTab();
 		loadTabs();
-//		main.add(new InsertPanelExample(ddh));
-//		main.setHeight(Window.getClientHeight() - 50 + "px");
-//		RootPanel.get().add(main);
 		RootLayoutPanel.get().add(main);
 	  Window.enableScrolling(true);
 	}
@@ -170,8 +154,6 @@ public class CAVilLag implements EntryPoint {
 
 	public void setNodeState(String id, boolean selected) {
 		selectedNodes.put(id, selected);
-//		templateProperties.setProperty(id, new Boolean(selected).toString());
-		// Window.alert(id+": "+selected);
 	}
 	
 	protected void updateChallengeTab() {
@@ -198,19 +180,8 @@ public class CAVilLag implements EntryPoint {
 
 			@Override
 			public void onSuccess(Vector<ChallengeModel> result) {
-//				Window.alert(result.size() + " challenges received");
 				challengePanel = new ChallengesPanel(result);
-				// p.setWidth(Window.getClientWidth() / 5 * 4 + "px");
-				// p.setHeight(Window.getClientHeight() / 5 * 4 + "px");
 				main.add(challengePanel, "Challenges");
-				//
-				// new ChallengesPanel(challenges);
-				// VerticalPanel vPanel = new VerticalPanel();
-				// for (ChallengeInfo challenge : result) {
-				// RadioButton radioButton = new RadioButton("Challenges", challenge);
-				//
-				// vPanel.add(radioButton);
-				// }
 			}
 		});
 	}
@@ -300,6 +271,29 @@ public class CAVilLag implements EntryPoint {
 	}
 	
 	/**
+	 * Creates a new challenge and adds it to the database
+	 * @param name
+	 * @param url
+	 */
+	public void createNewChallenge(String name, String url, String template) {
+		nodeService.addNewChallenge(name, url, template, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("copy challenge failed");
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (result.booleanValue()) {
+					Window.alert("challenge sucessfully copied");
+					challengePanel.resetChallengeCreatorPanel();
+				} else {
+					Window.alert("Please check URL!");
+				}
+			}});
+	}
+	
+	/**
 	 * Write the template, i.e. the selection of cards that will be loaded in the planning tool
 	 * to the database and connect it with the challenge ID. In the future this challenge will be loaded
 	 * in the planning tool using the template (i.e. the selection of cards composed with CAVilLag) 
@@ -318,7 +312,7 @@ public class CAVilLag implements EntryPoint {
 				Window.alert("Visual language saved");
 			}});
 	}
-
+	
 	/**
 	 * get the timestamp when the selection has been created
 	 * @param template
@@ -329,7 +323,6 @@ public class CAVilLag implements EntryPoint {
     
     Node templateNode = messageDom.getElementsByTagName("template").item(0);
     if (templateNode != null) {
-//	    Window.alert("Reading timestamp from "+templateNode.getNodeName());
 	    return ((Element)templateNode).getAttribute("time"); 
     }
     return null;
@@ -388,7 +381,6 @@ public class CAVilLag implements EntryPoint {
 			@Override
 			public void onSuccess(Boolean result) {
 				if (result.booleanValue()) {
-//					Window.alert("sucessfully updated challenge Name!");
 					challengePanel.resetChallengeCreatorPanel();
 				} else {
 					Window.alert("Please check Name!");
@@ -398,22 +390,22 @@ public class CAVilLag implements EntryPoint {
 
 	public void readTemplate(String template) {
 		if (template==null || !template.startsWith("<?xml")) {
-			for (String categoryName : categoryMap.keySet()) {
-				CategoryPanel cp = categoryMap.get(categoryName);
+			for (CategoryPanel cp : categoryMap.values()) {
 				cp.unselectAllCards();
 			}
+			rPanel.refreshView();
+			return;
 		}
+		ArrayList<String> selectedCards;
 		Document xmlDoc = XMLParser.parse(template);
 		Element root = xmlDoc.getDocumentElement();
-		XMLParser.removeWhitespace(xmlDoc);
-		Window.alert("trying to sort " + root.getNodeName());
 		NodeList results = root.getChildNodes();
 		HashMap<String, ArrayList<String>> selectedCardsMap = new HashMap<String, ArrayList<String>>();
 		for (int counter=0; counter<results.getLength(); ++counter) {
 			Element categoryElement = (Element) results.item(counter);
 			String categoryID = categoryElement.getAttribute("id");
 			NodeList cards = categoryElement.getElementsByTagName("card");
-			ArrayList<String> selectedCards = new ArrayList<String>();
+			selectedCards = new ArrayList<String>();
 			for (int i=0; i<cards.getLength(); ++i) {
 				Element card = (Element)cards.item(i);
 				selectedCards.add(card.getAttribute("id"));
@@ -422,9 +414,12 @@ public class CAVilLag implements EntryPoint {
 		}
 		for (String categoryName : categoryMap.keySet()) {
 			CategoryPanel cp = categoryMap.get(categoryName);
-			cp.sortCards(selectedCardsMap.get(getCategoryID(categoryName)));
+			selectedCards = selectedCardsMap.get(getCategoryID(categoryName));
+			if (selectedCards != null) {
+				cp.sortCards(selectedCards);
+			}
 		}
-		Window.alert("xml sucessfully parsed");
+		rPanel.refreshView();
 	}
 	
 }

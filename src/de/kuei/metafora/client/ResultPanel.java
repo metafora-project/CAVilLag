@@ -1,13 +1,10 @@
 package de.kuei.metafora.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -17,8 +14,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
-import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
 public class ResultPanel extends LayoutPanel {
@@ -87,14 +82,6 @@ public class ResultPanel extends LayoutPanel {
 		add(categories);
     setWidgetTopHeight(categories, 10, Unit.PCT, 80, Unit.PCT);
 		
-		
-//		Button refreshButton = new Button("refresh", new ClickHandler() {
-//			public void onClick(ClickEvent event) {
-//				refreshView();
-//			}
-//		});
-//		refreshButton.setSize("60px", "40px");
-		
 		Button saveButton = new Button("save", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				CAVilLag.instance.saveTemplate();
@@ -117,7 +104,6 @@ public class ResultPanel extends LayoutPanel {
 			for (String[] node : CAVilLag.instance.getSelectedNodes(name)) {
 				Card n = new Card(node[0], node[3], node[2], node[5]);
 				panel.add(n);
-//				panel.setWidgetTopHeight(n, panel.getWidgetCount()*102, Unit.PX, 100, Unit.PX);
 			}
 		}
 	}
@@ -135,7 +121,6 @@ public class ResultPanel extends LayoutPanel {
 		for (String name : categoriesMap.keySet()) {
 			categoryNode = doc.createElement("category");
 			categoryNode.setAttribute("id", CAVilLag.instance.getCategoryID(name));
-//			categoryNode.setAttribute("name", name);
 			root.appendChild(categoryNode);
 			for (String[] node : CAVilLag.instance.getSelectedNodes(name)) {
 				cardNode = doc.createElement("card");
@@ -146,44 +131,5 @@ public class ResultPanel extends LayoutPanel {
     return doc;
 		
 	}
-
-	public void setXML(String template) {
-//		Document doc = XMLParser.parse(template);
-//		NodeList nl = doc.getElementsByTagName("category");
-//		Node categoryNode;
-//		String categoryName;
-//		for (int i=0; i<nl.getLength(); ++i) {
-//			categoryNode = nl.item(i);
-//		}
-	}
-	
-//	protected String getXMLString() {
-//		ByteArrayOutputStream out = new ByteArrayOutputStream();
-//		XMLOutputFactory factory = XMLOutputFactory.newInstance();
-//		XMLStreamWriter writer;
-//		try {
-//			writer = factory.createXMLStreamWriter(out);
-//			writer.writeStartDocument();
-//		  writer.writeStartElement( "template" );
-//
-//			for (String name : categoriesMap.keySet()) {
-//			  writer.writeStartElement("category");
-//			  writer.writeAttribute("name", name);
-//				for (String[] node : CAVilLag.instance.getSelectedNodes(name)) {
-//				  writer.writeStartElement("card");
-//				  writer.writeAttribute("id", node[5]);
-//			    writer.writeEndElement();
-//				}
-//		    writer.writeEndElement();
-//			}
-//	    writer.writeEndElement();
-//			writer.close();		
-//		} catch (XMLStreamException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		return out.toString();
-//	}
 
 }

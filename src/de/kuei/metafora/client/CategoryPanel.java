@@ -122,9 +122,6 @@ public class CategoryPanel extends SimplePanel {
 		availableColumnCompositePanel.add(asAuxPanel);
 		availableColumnCompositePanel.setWidgetTopHeight(asAuxPanel, 10, Unit.PCT, 90, Unit.PCT);
 
-		// make the column draggable by its heading
-//		columnDragController.makeDraggable(availableColumnCompositePanel, availableHeading);
-
 		// Put together the column pieces
 		Label selectedHeading = new Label("selected");
 		selectedHeading.addStyleName(CSS_DEMO_INSERT_PANEL_EXAMPLE_HEADING);
@@ -141,22 +138,6 @@ public class CategoryPanel extends SimplePanel {
 		
 		selectedColumnCompositePanel.add(ssAuxPanel);
 		selectedColumnCompositePanel.setWidgetTopHeight(ssAuxPanel, 10, Unit.PCT, 90, Unit.PCT);
-
-		// make the column draggable by its heading
-//		columnDragController.makeDraggable(selectedColumnCompositePanel, selectedHeading);
-
-		// for (int row = 1; row <= ROWS; row++) {
-		// // initialize a widget
-		// HTML widget = new HTML("Draggable&nbsp;#" + ++count);
-		// widget.addStyleName(CSS_DEMO_INSERT_PANEL_EXAMPLE_WIDGET);
-		// widget.setHeight(Random.nextInt(4) + 2 + "em");
-		// verticalPanel.add(widget);
-		//
-		// // make the widget draggable
-		// widgetDragController.makeDraggable(widget);
-		// }
-		// }
-
 	}
 
 	public void addCard(DnDNode node, boolean isSelected) {
@@ -186,41 +167,34 @@ public class CategoryPanel extends SimplePanel {
 	}
 	
 	public void sortCards(ArrayList<String> selectedCards) {
-		Iterator<Widget> wi = selectedCardsPanel.iterator();
-		Widget w;
 		DnDNode node;
-		while (wi.hasNext()) {
-			w = wi.next();
-			if (w instanceof DnDNode) {
-				node = (DnDNode)w;
-				selectedCardsPanel.remove(node);
-				availableCardsPanel.add(node);
-			}
-		}
-		wi = availableCardsPanel.iterator();
-		while (wi.hasNext()) {
-			w = wi.next();
+		unselectAllCards();
+		ArrayList<DnDNode> nodesToMove = new ArrayList<DnDNode>();
+
+		for (Widget w : availableCardsPanel) {
 			if (w instanceof DnDNode) {
 				node = (DnDNode)w;
 				if (selectedCards.contains(node.getId())) {
-					availableCardsPanel.remove(node);
-					selectedCardsPanel.add(node);
+					nodesToMove.add(node);
 				}
 			}
+		}
+		for (DnDNode n : nodesToMove) {
+			availableCardsPanel.remove(n);
+			selectedCardsPanel.add(n);
 		}
 	}
 
 	public void unselectAllCards() {
-		Iterator<Widget> wi = selectedCardsPanel.iterator();
-		Widget w;
-		DnDNode node;
-		while (wi.hasNext()) {
-			w = wi.next();
+		ArrayList<DnDNode> nodesToMove = new ArrayList<DnDNode>();
+		for (Widget w : selectedCardsPanel) {
 			if (w instanceof DnDNode) {
-				node = (DnDNode)w;
-				selectedCardsPanel.remove(node);
-				availableCardsPanel.add(node);
+				nodesToMove.add((DnDNode)w);
 			}
+		}
+		for (DnDNode node : nodesToMove) {
+			selectedCardsPanel.remove(node);
+			availableCardsPanel.add(node);
 		}
 	}
 

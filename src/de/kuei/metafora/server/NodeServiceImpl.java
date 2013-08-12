@@ -45,4 +45,9 @@ public class NodeServiceImpl extends RemoteServiceServlet implements NodeService
 		return MysqlConnector.getInstance().updateChallengeName(challengeID, name);
 	}
 
+	@Override
+	public boolean addNewChallenge(String name, String url, String template) {
+		return MysqlConnector.getInstance().createNewChallenge(name, url, template);
+	}
+
 }

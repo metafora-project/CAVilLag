@@ -258,4 +258,26 @@ public class MysqlConnector extends MyslqAccessData {
 		return true;
 	}
 
+	public boolean createNewChallenge(String challengeName, String challengeUrl, String template) {
+
+		if (!isValidURL(challengeUrl)) {
+			return false;
+		}
+
+		String sql = "INSERT INTO challenge(challengeName, challengeUrl, template) VALUES ('" + challengeName + "', '"
+				+ challengeUrl + "', '" + template + "')";
+
+		Statement stmt;
+		try {
+			stmt = getConnection().createStatement();
+
+			stmt.execute(sql);
+
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
 }

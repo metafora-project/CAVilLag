@@ -19,4 +19,6 @@ public interface NodeServiceAsync {
 
 	void updateChallengeName(int challengeID, String name, AsyncCallback<Boolean> asyncCallback);
 
+	void addNewChallenge(String name, String url, String template, AsyncCallback<Boolean> asyncCallback);
+
 }

@@ -72,25 +72,35 @@ public class ChallengesPanel extends LayoutPanel {
 		createChallengePanel.setWidgetTopHeight(tbChallengeUrl, 130, Unit.PX, 30, Unit.PX);
 		createChallengePanel.setWidgetLeftWidth(tbChallengeUrl, 30, Unit.PX, 400, Unit.PX);
 		
-		Button createNewChallengeButton = new Button("create new challenge", new ClickHandler() {
+		Button createNewChallengeButton = new Button("create new\n challenge", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				createNewChallenge(tbChallengeName.getText(), tbChallengeUrl.getText());
 			}
 		});
-		createNewChallengeButton.setSize("150", "30px");
+		createNewChallengeButton.setSize("140", "50px");
 		createChallengePanel.add(createNewChallengeButton);
-		createChallengePanel.setWidgetTopHeight(createNewChallengeButton, 200, Unit.PX, 30, Unit.PX);
-		createChallengePanel.setWidgetLeftWidth(createNewChallengeButton,  60, Unit.PX, 140, Unit.PX);
+		createChallengePanel.setWidgetTopHeight(createNewChallengeButton, 200, Unit.PX, 50, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(createNewChallengeButton,  10, Unit.PX, 140, Unit.PX);
 
-		Button updateChallengeButton = new Button("update challenge table", new ClickHandler() {
+		Button updateChallengeButton = new Button("update selected\n challenge", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				updateChallenge(tbChallengeName.getText(), tbChallengeUrl.getText());
 			}
 		});
-		updateChallengeButton.setSize("150", "30px");
+		updateChallengeButton.setSize("140", "50px");
 		createChallengePanel.add(updateChallengeButton);
-		createChallengePanel.setWidgetTopHeight(updateChallengeButton, 200, Unit.PX, 30, Unit.PX);
-		createChallengePanel.setWidgetRightWidth(updateChallengeButton, 80, Unit.PX, 140, Unit.PX);
+		createChallengePanel.setWidgetTopHeight(updateChallengeButton, 200, Unit.PX, 50, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(updateChallengeButton, 160, Unit.PX, 140, Unit.PX);
+
+		Button copyChallengeButton = new Button("copy selected\n challenge", new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				copySelectedChallenge(tbChallengeName.getText(), tbChallengeUrl.getText(), selectedChallenge.getTemplate());
+			}
+		});
+		copyChallengeButton.setSize("140", "50px");
+		createChallengePanel.add(copyChallengeButton);
+		createChallengePanel.setWidgetTopHeight(copyChallengeButton, 200, Unit.PX, 50, Unit.PX);
+		createChallengePanel.setWidgetLeftWidth(copyChallengeButton, 310, Unit.PX, 140, Unit.PX);
 
 		this.add(createChallengePanel);
 		this.setWidgetTopHeight(createChallengePanel, 10, Unit.PCT, 80, Unit.PCT);
@@ -128,6 +138,22 @@ public class ChallengesPanel extends LayoutPanel {
 		CAVilLag.instance.updateChallengeTab();
 //		createChallengeTable();
 	}
+	
+	protected void copySelectedChallenge(String name, String url, String template) {
+		String copiedChallengeName = Window.prompt("Please enter name for copy\n of selected challenge:", "copy of"+name);
+		if (copiedChallengeName == null) {
+			return;
+		}
+		int challengeID = challengeExists(copiedChallengeName);
+		if (challengeID >= 0) {
+			Window.alert("The name of the copy already exists!");
+			return;
+		} else {
+			CAVilLag.instance.createNewChallenge(copiedChallengeName, url, template);
+		}
+		CAVilLag.instance.updateChallengeTab();
+//		createChallengeTable();
+	}
 
 	private void createChallengeTable() {
     challengeTable  = new CellTable<ChallengeModel>();
@@ -149,16 +175,6 @@ public class ChallengesPanel extends LayoutPanel {
     });
     
 
-//    // Add a text column to show the challenge name.
-//    Column<ChallengeInfo,Boolean> checkboxColumn = new Column<ChallengeInfo,Boolean>(new CheckboxCell() {}) {
-//    	@Override
-//      public Boolean getValue(ChallengeInfo object) {
-//        return false;
-//      }
-//
-//    };
-//    challengeTable.addColumn(checkboxColumn, "selected");
-    
     // Add a text column to show the challenge name.
     TextColumn<ChallengeModel> nameColumn = new TextColumn<ChallengeModel>() {
       @Override

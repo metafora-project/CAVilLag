@@ -82,7 +82,7 @@ public class ChallengesPanel extends LayoutPanel {
 		createChallengePanel.setWidgetTopHeight(createNewChallengeButton, 200, Unit.PX, 50, Unit.PX);
 		createChallengePanel.setWidgetLeftWidth(createNewChallengeButton,  10, Unit.PX, 140, Unit.PX);
 
-		Button updateChallengeButton = new Button("update selected\n challenge", new ClickHandler() {
+		Button updateChallengeButton = new Button("modify selected\n challenge", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				updateChallenge(tbChallengeName.getText(), tbChallengeUrl.getText());
 			}

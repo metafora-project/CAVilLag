@@ -85,6 +85,7 @@ public class ResultPanel extends LayoutPanel {
 		Button saveButton = new Button("save", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				CAVilLag.instance.saveTemplate();
+				CAVilLag.instance.updateChallengeTab();
 			}
 		});
 		

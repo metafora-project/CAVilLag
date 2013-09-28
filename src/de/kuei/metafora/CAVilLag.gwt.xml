@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='cavillag'>
-  <stylesheet src="CAVilLag.css"/>
-  
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
-  <inherits name="com.google.gwt.xml.XML" />  
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
@@ -19,8 +16,8 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='de.kuei.metafora.client.CAVilLag'/>
-  
-    <!-- Specify the paths for translatable code                    -->
+
+  <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
   <source path='shared'/>
 

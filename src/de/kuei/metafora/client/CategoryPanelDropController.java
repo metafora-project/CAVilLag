@@ -7,11 +7,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-/**
- * This is the drop controller used to make the planning tool cards DnD'able in CAVilLag
- * @author lingnau
- *
- */
 public class CategoryPanelDropController extends FlowPanelDropController {
 
 	private boolean selected;
@@ -31,6 +26,7 @@ public class CategoryPanelDropController extends FlowPanelDropController {
 		if (w instanceof DnDNode) {
 			DnDNode node = (DnDNode) w;
 			CAVilLag.instance.setNodeState(node.getId(), this.selected);
+//			Window.alert(node.getId() + " " + node.getName());
 		}
 	}
 
@@ -39,7 +35,6 @@ public class CategoryPanelDropController extends FlowPanelDropController {
 		Widget w = context.draggable;
 		if (w instanceof DnDNode) {
 			DnDNode node = (DnDNode) w;
-			Window.alert(node.getId() + " " + node.getName());
 			
 			if(!this.category.equals(node.getCategory())){
 				throw new VetoDragException();

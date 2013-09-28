@@ -2,20 +2,13 @@ package de.kuei.metafora.server;
 
 import javax.servlet.http.HttpServlet;
 
-import de.kuei.metafora.server.mysql.MysqlInitConnector;
-import de.kuei.metafora.server.mysql.MysqlConnector;
-import de.kuei.metafora.server.mysql.ServerDescription;
-
 public class StartupServlet extends HttpServlet {
 
-	public void init() {
-		// init mysql
-		MysqlInitConnector.getInstance().loadData("cavillag");
-		ServerDescription mysqlServer = MysqlInitConnector.getInstance().getAServer("mysql");
+	private static final boolean test = true;
+	// this flag also change the database server
+	public static final boolean productive = false;
 
-		MysqlConnector.url = "jdbc:mysql://" + mysqlServer.getServer() + "/metafora?useUnicode=true&characterEncoding=UTF-8";
-		MysqlConnector.user = mysqlServer.getUser();
-		MysqlConnector.password = mysqlServer.getPassword();
+	public void init() {
 
 	}
 
